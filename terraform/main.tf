@@ -2,60 +2,56 @@ provider "azurerm" {
   features {}
 }
 
-# Resource Group
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources-test1"
-  location = "West US"
+# Use existing Resource Group
+data "azurerm_resource_group" "existing_rg" {
+  name = "monitoringproject"
 }
 
-# Virtual Network
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network-test"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+# Use existing Virtual Network
+data "azurerm_virtual_network" "existing_vnet" {
+  name                = "monitorvm1-vnet"
+  resource_group_name = data.azurerm_resource_group.existing_rg.name
 }
 
-# Subnet
-resource "azurerm_subnet" "example" {
-  name                 = "example-subnet-test"
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.0.1.0/24"]
+# Use existing Subnet
+data "azurerm_subnet" "existing_subnet" {
+  name                 = "default"
+  virtual_network_name = data.azurerm_virtual_network.existing_vnet.name
+  resource_group_name  = data.azurerm_resource_group.existing_rg.name
 }
 
 # Network Interface
 resource "azurerm_network_interface" "example" {
-  name                = "example-nic-test"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  name                = "terraformtest-nic"
+  location            = data.azurerm_resource_group.existing_rg.location
+  resource_group_name = data.azurerm_resource_group.existing_rg.name
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = azurerm_subnet.example.id
+    subnet_id                     = data.azurerm_subnet.existing_subnet.id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
-# Smallest Virtual Machine (Standard_D2s_v3)
+# Virtual Machine (SUSE Enterprise Linux for SAP 15 SP6 + 24x7 Support)
 resource "azurerm_virtual_machine" "example" {
-  name                  = "example-machine"
-  location              = azurerm_resource_group.example.location
-  resource_group_name   = azurerm_resource_group.example.name
+  name                  = "terraformtest"
+  location              = data.azurerm_resource_group.existing_rg.location
+  resource_group_name   = data.azurerm_resource_group.existing_rg.name
   network_interface_ids = [azurerm_network_interface.example.id]
-  vm_size               = "Standard_D2s_v3"  # Use a smaller VM size if necessary
+  vm_size               = "Standard_D2s_v3"  # Adjust VM size as needed
 
-  # Ubuntu 22.04 LTS Image
+  # SUSE Enterprise Linux for SAP 15 SP6 + 24x7 Support Image
   storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "19_04-gen2"
+    publisher = "SUSE"
+    offer     = "sles-sap-15-sp6"
+    sku       = "sles-sap-15-sp6"
     version   = "latest"
   }
 
   # OS Disk
   storage_os_disk {
-    name              = "example-os-disk"
+    name              = "terraformtest-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
@@ -63,7 +59,7 @@ resource "azurerm_virtual_machine" "example" {
 
   # Admin Account
   os_profile {
-    computer_name  = "hostname"
+    computer_name  = "terraformtest"
     admin_username = "adminuser"
     admin_password = "P@ssword1234!"
   }
@@ -71,4 +67,8 @@ resource "azurerm_virtual_machine" "example" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+}
+
+provider "azurerm" {
+  subscription_id = "767b7bef-2d12-4b1a-a76a-b39f276ab639"
 }
