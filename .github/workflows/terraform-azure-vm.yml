@@ -33,11 +33,26 @@ jobs:
     - name: 'Terraform Init'
       run: terraform init
       working-directory: ./terraform
+      env:
+        TF_LOG: DEBUG  # Enable detailed Terraform logs
+        TF_LOG_PATH: terraform-debug.log  # Write logs to a file
 
     - name: 'Terraform Plan'
       run: terraform plan
       working-directory: ./terraform
+      env:
+        TF_LOG: DEBUG
+        TF_LOG_PATH: terraform-debug.log
 
     - name: 'Terraform Apply'
       run: terraform apply -auto-approve
       working-directory: ./terraform
+      env:
+        TF_LOG: DEBUG
+        TF_LOG_PATH: terraform-debug.log
+
+    - name: 'Upload Terraform Logs'
+      uses: actions/upload-artifact@v2
+      with:
+        name: terraform-debug-logs
+        path: ./terraform/terraform-debug.log
