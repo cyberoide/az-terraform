@@ -5,7 +5,7 @@ provider "azurerm" {
 # Resource Group
 resource "azurerm_resource_group" "example" {
   name     = "example-resources-test"
-  location = "East US"
+  location = "West US"
 }
 
 # Virtual Network
@@ -48,8 +48,8 @@ resource "azurerm_virtual_machine" "example" {
   # Ubuntu 22.04 LTS Image
   storage_image_reference {
     publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
+    offer     = "UbuntuServer"
+    sku       = "19_04-gen2"
     version   = "latest"
   }
 
