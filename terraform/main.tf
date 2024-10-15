@@ -1,4 +1,3 @@
-# main.tf
 provider "azurerm" {
   features {}
 }
@@ -38,19 +37,19 @@ resource "azurerm_network_interface" "example" {
   }
 }
 
-# Smallest Virtual Machine (Standard_B1ls)
+# Smallest Virtual Machine (Standard_D2s_v3)
 resource "azurerm_virtual_machine" "example" {
   name                  = "example-machine"
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
   network_interface_ids = [azurerm_network_interface.example.id]
-  vm_size               = "Standard_D2s_v3"  # Smallest VM size
+  vm_size               = "Standard_D2s_v3"  # Use a smaller VM size if necessary
 
-  # Ubuntu Image
+  # Ubuntu 22.04 LTS Image
   storage_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
-    sku       = "24.04-LTS"
+    sku       = "22.04-LTS"  # Set to Ubuntu 22.04 LTS
     version   = "latest"
   }
 
