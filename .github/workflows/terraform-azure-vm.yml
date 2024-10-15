@@ -51,8 +51,4 @@ jobs:
         TF_LOG: DEBUG
         TF_LOG_PATH: terraform-debug.log
 
-    - name: 'Upload Terraform Logs'
-      uses: actions/upload-artifact@v2
-      with:
-        name: terraform-debug-logs
-        path: ./terraform/terraform-debug.log
+   
