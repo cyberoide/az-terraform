@@ -37,13 +37,7 @@ jobs:
         TF_LOG: DEBUG  # Enable detailed Terraform logs
         TF_LOG_PATH: terraform-debug.log  # Write logs to a file
 
-    - name: 'Terraform Plan'
-      run: terraform plan -target=azurerm_virtual_machine.example
-      working-directory: ./terraform
-      env:
-        TF_LOG: DEBUG
-        TF_LOG_PATH: terraform-debug.log
-
+    
     - name: 'Terraform Apply'
       run: terraform apply -auto-approve
       working-directory: ./terraform
