@@ -1,5 +1,6 @@
 provider "azurerm" {
   features {}
+  subscription_id = "767b7bef-2d12-4b1a-a76a-b39f276ab639"
 }
 
 # Use existing Resource Group
@@ -67,8 +68,4 @@ resource "azurerm_virtual_machine" "example" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
-}
-
-provider "azurerm" {
-  subscription_id = "767b7bef-2d12-4b1a-a76a-b39f276ab639"
 }
