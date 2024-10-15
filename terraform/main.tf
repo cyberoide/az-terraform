@@ -1,6 +1,6 @@
 # main.tf
 provider "azurerm" {
-  features = {}
+  features {}
 }
 
 # Resource Group
