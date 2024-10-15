@@ -1,0 +1,41 @@
+name: 'Terraform Azure VM Deployment'
+
+on:
+  push:
+    branches:
+      - main  # Trigger on the main branch push
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Checkout Repository'
+      uses: actions/checkout@v2
+
+    - name: 'Setup Terraform'
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0  # Specify your Terraform version here
+
+    - name: 'Azure Login'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Terraform Init'
+      run: terraform init
+      working-directory: ./terraform  # Directory containing Terraform code
+
+    - name: 'Terraform Plan'
+      run: terraform plan
+      working-directory: ./terraform
+
+    - name: 'Terraform Apply'
+      run: terraform apply -auto-approve
+      working-directory: ./terraform
+
