@@ -48,8 +48,8 @@ resource "azurerm_virtual_machine" "example" {
   # Ubuntu 22.04 LTS Image
   storage_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "22.04-LTS"  # Set to Ubuntu 22.04 LTS
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
 
