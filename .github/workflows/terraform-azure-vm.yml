@@ -3,9 +3,6 @@ name: 'Terraform Azure VM Deployment'
 on:
   push:
     branches:
-      - main  # Trigger on the main branch push
-  pull_request:
-    branches:
       - main
 
 jobs:
@@ -17,19 +14,25 @@ jobs:
     - name: 'Checkout Repository'
       uses: actions/checkout@v2
 
-    - name: 'Setup Terraform'
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.0.0  # Specify your Terraform version here
-
     - name: 'Azure Login'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: 'Set Azure Environment Variables for Terraform'
+      run: |
+        echo "Setting Azure environment variables..."
+        echo "ARM_CLIENT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}" >> $GITHUB_ENV
+        echo "ARM_CLIENT_SECRET=${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}" >> $GITHUB_ENV
+        echo "ARM_TENANT_ID=${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}" >> $GITHUB_ENV
+
+    - name: 'Setup Terraform'
+      uses: hashicorp/setup-terraform@v1
+
     - name: 'Terraform Init'
       run: terraform init
-      working-directory: ./terraform  # Directory containing Terraform code
+      working-directory: ./terraform
 
     - name: 'Terraform Plan'
       run: terraform plan
@@ -38,4 +41,3 @@ jobs:
     - name: 'Terraform Apply'
       run: terraform apply -auto-approve
       working-directory: ./terraform
-
