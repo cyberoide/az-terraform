@@ -1,6 +1,6 @@
 provider "azurerm" {
   features {}
-  subscription_id = "767b7bef-2d12-4b1a-a76a-b39f276ab639"
+  # subscription_id = "subscription-id"
 }
 
 # Use existing Resource Group
@@ -21,6 +21,16 @@ data "azurerm_subnet" "existing_subnet" {
   resource_group_name  = data.azurerm_resource_group.existing_rg.name
 }
 
+# Create Public IP Address with Static Allocation (required for Standard SKU)
+resource "azurerm_public_ip" "example" {
+  name                = "terraformtest-public-ip"
+  location            = data.azurerm_resource_group.existing_rg.location
+  resource_group_name = data.azurerm_resource_group.existing_rg.name
+  allocation_method   = "Static"  # Must be Static for Standard SKU
+
+  sku = "Standard"  # Specify the SKU
+}
+
 # Network Interface
 resource "azurerm_network_interface" "example" {
   name                = "terraformtest-nic"
@@ -31,6 +41,7 @@ resource "azurerm_network_interface" "example" {
     name                          = "internal"
     subnet_id                     = data.azurerm_subnet.existing_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.example.id # Associate public IP
   }
 }
 
@@ -46,7 +57,7 @@ resource "azurerm_virtual_machine" "example" {
   storage_image_reference {
     publisher = "SUSE"
     offer     = "sles-sap-15-sp6"
-    sku       = "sles-sap-15-sp6"
+    sku       = "gen1"
     version   = "latest"
   }
 
