@@ -16,9 +16,9 @@ on:
         required: true
         default: 'my-nic'
 
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   terraform:
