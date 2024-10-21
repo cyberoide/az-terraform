@@ -1,3 +1,19 @@
+# Define the variables for resource names
+variable "vm_name" {
+  description = "Name of the Virtual Machine"
+  type        = string
+}
+
+variable "public_ip_name" {
+  description = "Name of the Public IP Address"
+  type        = string
+}
+
+variable "nic_name" {
+  description = "Name of the Network Interface"
+  type        = string
+}
+
 provider "azurerm" {
   features {}
   # subscription_id = "subscription-id"
@@ -23,7 +39,7 @@ data "azurerm_subnet" "existing_subnet" {
 
 # Create Public IP Address with Static Allocation (required for Standard SKU)
 resource "azurerm_public_ip" "example" {
-  name                = "terraformtest-public-ip"
+  name                = var.public_ip_name
   location            = data.azurerm_resource_group.existing_rg.location
   resource_group_name = data.azurerm_resource_group.existing_rg.name
   allocation_method   = "Static"  # Must be Static for Standard SKU
@@ -33,7 +49,7 @@ resource "azurerm_public_ip" "example" {
 
 # Network Interface
 resource "azurerm_network_interface" "example" {
-  name                = "terraformtest-nic"
+  name                = var.nic_name
   location            = data.azurerm_resource_group.existing_rg.location
   resource_group_name = data.azurerm_resource_group.existing_rg.name
 
@@ -47,7 +63,7 @@ resource "azurerm_network_interface" "example" {
 
 # Virtual Machine (SUSE Enterprise Linux for SAP 15 SP6 + 24x7 Support)
 resource "azurerm_virtual_machine" "example" {
-  name                  = "terraformtest"
+  name                  = var.vm_name
   location              = data.azurerm_resource_group.existing_rg.location
   resource_group_name   = data.azurerm_resource_group.existing_rg.name
   network_interface_ids = [azurerm_network_interface.example.id]
@@ -63,7 +79,7 @@ resource "azurerm_virtual_machine" "example" {
 
   # OS Disk
   storage_os_disk {
-    name              = "terraformtest-os-disk"
+    name              = "${var.vm_name}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
@@ -71,7 +87,7 @@ resource "azurerm_virtual_machine" "example" {
 
   # Admin Account
   os_profile {
-    computer_name  = "terraformtest"
+    computer_name  = var.vm_name
     admin_username = "adminuser"
     admin_password = "P@ssword1234!"
   }
