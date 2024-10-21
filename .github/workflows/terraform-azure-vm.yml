@@ -53,10 +53,7 @@ jobs:
         TF_LOG_PATH: terraform-debug.log
 
     - name: 'Terraform Apply'
-      run: terraform apply -auto-approve \
-        -var "vm_name=${{ github.event.inputs.vm_name }}" \
-        -var "public_ip_name=${{ github.event.inputs.public_ip_name }}" \
-        -var "nic_name=${{ github.event.inputs.nic_name }}"
+      run: terraform apply -auto-approve -var "vm_name=${{ github.event.inputs.vm_name }}" -var "public_ip_name=${{ github.event.inputs.public_ip_name }}" -var "nic_name=${{ github.event.inputs.nic_name }}"
       working-directory: ./terraform
       env:
         TF_LOG: DEBUG
