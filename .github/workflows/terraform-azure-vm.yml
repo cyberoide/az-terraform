@@ -2,9 +2,23 @@ name: 'Terraform Azure VM Deployment'
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      vm_name:
+        description: 'Name of the Virtual Machine'
+        required: true
+        default: 'my-vm'
+      public_ip_name:
+        description: 'Name of the Public IP Address'
+        required: true
+        default: 'my-public-ip'
+      nic_name:
+        description: 'Name of the Network Interface'
+        required: true
+        default: 'my-nic'
+
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   terraform:
@@ -35,15 +49,15 @@ jobs:
       run: terraform init
       working-directory: ./terraform
       env:
-        TF_LOG: DEBUG  # Enable detailed Terraform logs
-        TF_LOG_PATH: terraform-debug.log  # Write logs to a file
+        TF_LOG: DEBUG
+        TF_LOG_PATH: terraform-debug.log
 
-    
     - name: 'Terraform Apply'
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve \
+        -var "vm_name=${{ github.event.inputs.vm_name }}" \
+        -var "public_ip_name=${{ github.event.inputs.public_ip_name }}" \
+        -var "nic_name=${{ github.event.inputs.nic_name }}"
       working-directory: ./terraform
       env:
         TF_LOG: DEBUG
         TF_LOG_PATH: terraform-debug.log
-
-   
